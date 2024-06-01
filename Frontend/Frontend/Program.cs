@@ -2,7 +2,6 @@ using Frontend;
 using Frontend.Client.Pages;
 using Frontend.Components;
 using Frontend.Data;
-using Frontend.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +15,6 @@ builder.Services.AddRazorComponents()
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
 builder.Services.AddHttpClient();
-builder.Services.AddScoped<UserService>();
 
 builder.Services.AddAuthentication(options =>
     {
