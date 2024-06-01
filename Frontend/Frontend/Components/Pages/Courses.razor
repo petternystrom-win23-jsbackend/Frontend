@@ -1,0 +1,189 @@
+﻿@page "/courses"
+
+@using System.Text.Json.Serialization
+@using System.Text.Json
+@using System.Globalization
+
+@attribute [StreamRendering]
+@attribute [Authorize]
+
+<PageTitle>Courses</PageTitle>
+
+<section class="courses-section">
+    <div class="container">
+        <div class="courses-section-header">
+            <div class="nav-location">
+                <p><a href="/"><i class="fa-solid fa-house"></i> Home </a>>><a href="/courses" class="a-margin"> Courses</a></p>
+            </div>
+            <div class="courses-categories-search">
+                <div class="heading">
+                    <h1>Courses</h1>
+                </div>
+                <div class="categories-and-search">
+                    <div class="category-group">
+                        <select class="category-dropdown">
+                            <option value="">All categories</option>
+                            <option value="">Category 1</option>
+                            <option value="">Category 2</option>
+                            <option value="">Category 3</option>
+                        </select>
+                        <div class="category-search">
+                            <input type="text" placeholder="Search courses">
+                            <button type="submit" class="search-button">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="courses-main">
+            <div class="courses-grid">
+                @if (courses == null)
+                {
+                    <p><em>Loading courses...</em></p>
+                }
+                 else
+                {
+                    @foreach (var course in courses)
+                    {
+                        <div class="course">
+                            <div class="bookmarker">
+                                <a href="#"><img src="images/bookmark-button.svg" alt=""></a>
+                            </div>
+                            @if (course.IsBestseller)
+                            {
+                                <div class="best-seller">
+                                    <p>Best Seller</p>
+                                </div>
+                            }
+                            <a href="/courses/@course.Id"><img src="@course.ImageUri" alt="@course.Title"></a>
+                            <div class="course-texts">
+                                <h5>@course.Title</h5>
+                                <p class="author-font">
+                                    By
+                                    @if(course.Authors != null && course.Authors.Count > 0)
+                                    {                                        
+                                        @foreach (var author in course.Authors)
+                                        {
+                                            <span>@author</span>
+                                            if (author != course.Authors.Last())
+                                            {
+                                                <span>, </span>
+                                            }                                            
+                                        }
+                                    }
+
+                                </p>
+                                <div class="prices">
+                                    @if (!string.IsNullOrEmpty(course.DiscountPrice) && course.DiscountPrice != "0")
+                                    {
+                                        var discountPercentage = decimal.Parse(course.DiscountPrice);
+                                        var originalPrice = decimal.Parse(course.Price);
+                                        var discountedPrice = (originalPrice * (1 - (discountPercentage / 100)));
+                                        <p class="price-font sale-font">@GetFormattedPrice(discountedPrice, course.Currency) <span class="sale-span">@GetFormattedPrice(originalPrice, course.Currency)</span></p>
+                                    }
+                                    else
+                                    {
+                                        <p class="price-font">@GetFormattedPrice(decimal.Parse(course.Price), course.Currency)</p>
+                                    }
+                                </div>
+                                <div class="length-rating">
+                                    <p><i class="fa-regular fa-clock"></i>@course.Hours hours</p>
+                                    <p><i class="fa-regular fa-thumbs-up"></i>@course.LikesInPercentage  (@course.LikesInNumber)</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+            <div class="courses-pagination">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li class="page-item"><a class="page-link" href="#" aria-label="Previous">&laquo;</a></li>
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item active"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">4</a></li>
+                        <li class="page-item"><a class="page-link" href="#" aria-label="Next">&raquo;</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div class="courses-section-footer">
+            <img src="images/illustration.svg" alt="">
+            <div class="texts">
+                <h4>Ready to get started?</h4>
+                <h1>Take Your <span>Skills</span> to the Next Level</h1>
+                <div class="button-flex">
+                    <a class="btn-theme-s" href="/workwithus">
+                        Work with us
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@code {
+
+    private List<CourseCardModel>? courses;
+    protected override async Task OnInitializedAsync()
+    {
+        var query = new GraphQLQuery { Query = "{ getAllCourses{id isBestSeller title authors {name} imageUri prices {price currency discount} hours likesInNumber likesInPercentage }}" };
+        var apiUri = Configuration["COURSESPROVIDER_API"];
+
+        var response = await Http.PostAsJsonAsync(apiUri, query);
+        if(response.IsSuccessStatusCode)
+        {
+            var result = await response.Content.ReadFromJsonAsync<GraphQLResponse>();
+            courses = result?.Data.GetProperty("getAllCourses").EnumerateArray()
+            .Select(course => new CourseCardModel
+            {
+                Id = course.GetProperty("id").GetString(),
+                Title = course.GetProperty("title").GetString(),
+                
+                Hours = course.GetProperty("hours").GetString(),
+                LikesInPercentage = course.GetProperty("likesInPercentage").GetString(),
+                LikesInNumber = course.GetProperty("likesInNumber").GetString(),
+                ImageUri = course.GetProperty("imageUri").GetString(),
+                Price = course.GetProperty("prices").GetProperty("price").GetDecimal().ToString(),
+                DiscountPrice = course.GetProperty("prices").GetProperty("discount").GetDecimal().ToString(),
+                Currency = course.GetProperty("prices").GetProperty("currency").GetString(),
+                Authors = course.GetProperty("authors")
+                    .EnumerateArray()
+                    .Select(author => author.GetProperty("name").GetString())
+                    .ToList(),
+                IsBestseller = course.GetProperty("isBestSeller").GetBoolean(),
+            }).ToList();            
+        }
+    }
+        private string GetFormattedPrice(decimal price, string currency)
+    {
+        if (currency == "USD")
+        {
+            return $"${price.ToString("F2", CultureInfo.InvariantCulture)}";
+        }
+        else
+        {
+            return $"{price.ToString("F2", CultureInfo.InvariantCulture)} {currency}";
+        }
+    }
+    private class CourseCardModel
+    {
+        public string? Id { get; set; }
+        public bool IsBestseller { get; set; }
+        public string? ImageUri { get; set; }
+        public string? Title { get; set; }
+        public string? Price { get; set; }
+        public string? DiscountPrice { get; set; }
+        public string? Currency { get; set; }
+        public string? Hours { get; set; }
+        public string? LikesInPercentage { get; set; }
+        public string? LikesInNumber { get; set; }
+        public List<string>? Authors { get; set; }
+
+    }
+
+}

@@ -1,0 +1,10 @@
+﻿@using static Frontend.Components.Sections.HomeSections.Integrate
+<div class="box">
+    <img src="@Model.ImageSrc" alt="@Model.ImageAltText" />
+    <p>@Model.Description</p>
+</div>
+
+@code {
+    [Parameter]
+    public IntegrateItem? Model { get; set; }
+}

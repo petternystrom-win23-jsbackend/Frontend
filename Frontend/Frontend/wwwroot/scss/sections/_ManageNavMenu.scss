@@ -1,0 +1,26 @@
+﻿.buttons-container {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+
+    .account-details-button {
+        margin-bottom: 10px;
+        color: $theme;
+        background-color: $gray-100;
+
+        &:hover {
+            background-color: $theme;
+            color: white;
+        }
+    }
+
+    .signout-button {
+        color: $theme;
+        background-color: $gray-100;
+
+        &:hover {
+            background-color: $theme;
+            color: white;
+        }
+    }
+}

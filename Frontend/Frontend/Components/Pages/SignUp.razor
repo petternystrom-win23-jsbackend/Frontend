@@ -1,0 +1,144 @@
+﻿@page "/signup"
+
+@using System.Text
+@using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+@using Frontend.Data
+@using Microsoft.EntityFrameworkCore
+@using WebApp.Filters
+
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject NavigationManager NavigationManager
+
+<PageTitle>Sign up</PageTitle>
+<section class="signup">
+    <div class="container">
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="alert alert-danger">
+                @ErrorMessage
+            </div>
+        }
+        <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="signup" novalidate>
+            <DataAnnotationsValidator />
+            <h1>Create Account</h1>
+            <p>Already have an account? <a href="SignIn">Sign in here</a></p>
+            <div class="form-content">
+                <div id="form-firstname" class="input-group">
+                    <label>First name</label>
+                    <InputText @bind-Value="Input.FirstName" class="form-control" autocomplete="givenname" aria-required="true" placeholder="Enter your first name" />
+                    <ValidationMessage For="() => Input.FirstName" />
+                </div>
+                <div id="form-lastname" class="input-group">
+                    <label for="lastName">Last name</label>
+                    <InputText @bind-Value="Input.LastName" class="form-control" autocomplete="surname" aria-required="true" placeholder="Enter your last name" />
+                    <ValidationMessage For="() => Input.LastName" />
+                </div>
+                <div id="form-email" class="input-group">
+                    <label for="email">Email adress</label>
+                    <InputText type="email" @bind-Value="Input.Email" class="form-control" autocomplete="email" aria-required="true" placeholder="Enter your email adress" />
+                    <ValidationMessage For="() => Input.Email" />
+                </div>
+                <div id="form-password" class="input-group">
+                    <label for="password">Password</label>
+                    <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="password" aria-required="true" placeholder="Enter your password" />
+                    <ValidationMessage For="() => Input.Password" />
+                </div>
+                <div id="form-confirmpassword" class="input-group">
+                    <label for="confirmPassword">Confirm password</label>
+                    <InputText type="password" @bind-Value="Input.ConfirmPassword" class="form-control" autocomplete="confirm" aria-required="true" placeholder="Confirm password" />
+                    <ValidationMessage For="() => Input.ConfirmPassword" />
+                </div>
+                <div id="form-checkbox">
+                    <div class="checkbox-group">
+                        <InputCheckbox @bind-Value="Input.TermsAccepted" class="form-control" autocomplete="terms" aria-required="true" />
+                        <label for="terms">I accept the Terms & Conditions</label>
+                    </div>
+                    <ValidationMessage For="() => Input.TermsAccepted" />
+                </div>
+                <div id="form-button">
+                    <button type="submit" class="btn-theme" id="signupButton"><i class="fa-regular fa-arrow-left-to-bracket"></i>Sign Up</button>
+                </div>
+            </div>
+
+        </EditForm>
+    </div>
+
+</section>
+
+@code {
+
+    private string? ErrorMessage { get; set; }
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+
+    public async Task RegisterUser(EditContext editContext)
+    {
+        var user = new ApplicationUser
+        {
+            FirstName = Input.FirstName,
+            LastName = Input.LastName,
+            UserName = Input.Email,
+            Email = Input.Email 
+        };
+
+        if (await UserManager.Users.AnyAsync(u => u.Email == user.Email))
+        {
+            ErrorMessage = "User with this email already exists.";
+            return;
+        }
+
+        var result = await UserManager.CreateAsync(user, Input.Password);
+
+        if (!result.Succeeded)
+            return;       
+
+        if (UserManager.Options.SignIn.RequireConfirmedAccount)
+        {
+            NavigationManager.NavigateTo($"/confirm-email?email={user.Email}");
+        }
+
+        await SignInManager.SignInAsync(user, isPersistent: false);
+        NavigationManager.NavigateTo(ReturnUrl ?? "/");
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; } = null!;
+
+        [Required]
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; } = null!;
+
+        [Required]
+        [EmailAddress]
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "The Email field is not a valid e-mail address.")]
+        [Display(Name = "Email")]
+        public string Email { get; set; } = "";
+
+        [Required]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$", ErrorMessage = "Password must be at least 8 characters and contain at least one lowercase letter, one uppercase letter, one numeric digit, and one special character.")]
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
+        public string Password { get; set; } = "";
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; } = "";
+
+        [CheckBoxRequired]
+        [Display(Name = "Terms & Conditions")]
+        public bool TermsAccepted { get; set; }
+    }
+
+}

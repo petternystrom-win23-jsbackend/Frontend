@@ -1,0 +1,82 @@
+﻿@inherits LayoutComponentBase
+
+<section class="integrate-section">
+    <div class="container">
+        <div class="header-texts">
+            <h1>Integrate Top Work Tools</h1>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin
+                volutpat mollis egestas. Nam luctus facilisis ultrices.
+                Pellentesque volutpat ligula est. Mattis fermentum, at nec
+                lacus.
+            </p>
+        </div>
+        <div class="integrate-boxes">
+            @foreach (var item in IntegrateItems)
+            {
+                <IntegrateBox Model="@item" />
+            }
+        </div>
+    </div>
+</section>
+
+@code {
+    private List<IntegrateItem> IntegrateItems = new List<IntegrateItem>
+    {
+                    new IntegrateItem
+                    {
+                        ImageSrc = "images/Google.svg",
+                        ImageAltText = "image of the Google logo",
+                        Description = "Lorem magnis pretium sed curabitur nunc facilisi nunc cursus sagittis."
+                    },
+                    new IntegrateItem
+                    {
+                        ImageSrc = "images/Zoom.svg",
+                        ImageAltText = "image of the Zoom logo",
+                        Description = "In eget a mauris quis. Tortor dui tempus quis integer est sit natoque placerat dolor."
+                    },
+                    new IntegrateItem
+                    {
+                        ImageSrc = "images/Slack.svg",
+                        ImageAltText = "image of the Slack logo",
+                        Description = "Id mollis consectetur congue egestas egestas suspendisse blandit justo."
+                    },
+                    new IntegrateItem
+                    {
+                        ImageSrc = "images/Gmail.svg",
+                        ImageAltText = "image of the Gmail logo",
+                        Description = "Rutrum interdum tortor, sed at nulla. A cursus bibendum elit purus cras praesent."
+                    },
+                    new IntegrateItem
+                    {
+                        ImageSrc = "images/Trello.svg",
+                        ImageAltText = "image of the Trello logo",
+                        Description = "Congue pellentesque amet, viverra curabitur quam diam scelerisque fermentum urna."
+                    },
+                    new IntegrateItem
+                    {
+                        ImageSrc = "images/MailChimp.svg",
+                        ImageAltText = "image of the MailChimp logo",
+                        Description = "A elementum, imperdiet enim, pretium etiam facilisi in aenean quam mauris."
+                    },
+                    new IntegrateItem
+                    {
+                        ImageSrc = "images/Dropbox.svg",
+                        ImageAltText = "image of the Dropbox logo",
+                        Description = "Ut in turpis consequat odio diam lectus elementum. Est faucibus blandit platea."
+                    },
+                    new IntegrateItem
+                    {
+                        ImageSrc = "images/Evernote.svg",
+                        ImageAltText = "image of the Evernote logo",
+                        Description = "Faucibus cursus maecenas lorem cursus nibh. Sociis sit risus id. Sit facilisis dolor arcu."
+                    }
+    };
+
+    public class IntegrateItem
+    {
+        public string ImageSrc { get; set; } = null!;
+        public string ImageAltText { get; set; } = null!;
+        public string Description { get; set; } = null!;
+    }
+}

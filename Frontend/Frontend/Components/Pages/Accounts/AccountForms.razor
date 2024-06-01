@@ -1,0 +1,169 @@
+﻿@using Frontend.Data
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@inject UserManager<ApplicationUser> UserManager
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@if (user == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <EditForm Model="Input" OnValidSubmit="UpdateUser" FormName="UpdateUserForm">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <h5>Basic Info</h5>
+
+        <div class="basic-info">
+            <div class="form-content">
+
+                <div class="input-group" id="form-firstname">
+                    <label for="firstName">First Name</label>
+                    <InputText id="firstName" class="form-control" @bind-Value="Input.FirstName" />
+                    <ValidationMessage For="@(() => Input.FirstName)" />
+                </div>
+                <div class="input-group" id="form-lastname">
+                    <label for="lastName">Last Name</label>
+                    <InputText id="lastName" class="form-control" @bind-Value="Input.LastName" />
+                    <ValidationMessage For="@(() => Input.LastName)" />
+                </div>
+                <div class="input-group" id="form-email">
+                    <label for="email">Email</label>
+                    <InputText id="email" class="form-control" @bind-Value="Input.Email" />
+                    <ValidationMessage For="@(() => Input.Email)" />
+                </div>
+                <div class="input-group" id="form-phone">
+                    <label for="phone">Phone Number</label>
+                    <InputText id="phone" class="form-control" @bind-Value="Input.PhoneNumber" />
+                    <ValidationMessage For="@(() => Input.PhoneNumber)" />
+                </div>
+                <div class="input-group" id="form-bio">
+                    <label for="bio">Bio <span>(optional)</span></label>
+                    <InputTextArea id="bio" class="form-control" @bind-Value="Input.Bio" />
+                </div>
+            </div>
+        </div>
+        <h5 class="mt-3">Address Info</h5>
+        <div class="address-info">
+            <div class="form-content">
+
+                <div class="input-group" id="form-addressline-1">
+                    <label for="addressLine1">Address Line 1</label>
+                    <InputText id="addressLine1" class="form-control" @bind-Value="Input.Address.AddressLine_1" />
+                    <ValidationMessage For="@(() => Input.Address.AddressLine_1)" />
+                </div>
+                <div class="input-group" id="form-addressline-2">
+                    <label for="addressLine2">Address Line 2 <span>(optional)</span></label>
+                    <InputText id="addressLine2" class="form-control" @bind-Value="Input.Address.AddressLine_2" />
+                    <ValidationMessage For="@(() => Input.Address.AddressLine_2)" />
+                </div>
+                <div class="input-group" id="form-postalcode">
+                    <label for="postalCode">Postal Code</label>
+                    <InputText id="postalCode" class="form-control" @bind-Value="Input.Address.PostalCode" />
+                    <ValidationMessage For="@(() => Input.Address.PostalCode)" />
+                </div>
+                <div class="input-group" id="form-city">
+                    <label for="city">City</label>
+                    <InputText id="city" class="form-control" @bind-Value="Input.Address.City" />
+                    <ValidationMessage For="@(() => Input.Address.City)" />
+                </div>
+                <div class="form-button" id="form-button-grid">
+                    <button type="submit" class="btn-gray">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+}
+@code {
+    [CascadingParameter]
+    public ApplicationUser user { get; set; } = default!;
+ 
+    public ApplicationUser oldUser { get; set; } = default!;
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+
+    private bool isUserDataLoaded = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (user != null)
+        {
+            Input.FirstName = user.FirstName;
+            Input.LastName = user.LastName;
+            Input.Email = user.Email;
+            Input.PhoneNumber = user.PhoneNumber;
+            Input.Bio = user.Bio;
+            Input.Address.AddressLine_1 = user.Address.AddressLine_1;
+            Input.Address.AddressLine_2 = user.Address.AddressLine_2;
+            Input.Address.PostalCode = user.Address.PostalCode;
+            Input.Address.City = user.Address.City;
+        }
+    }
+   
+    private async Task UpdateUser()
+    {
+        var userToUpdate = await UserManager.FindByIdAsync(UserManager.GetUserId(HttpContext.User));
+        try
+        {
+            if (userToUpdate != null)
+            {
+                var updatedUser = new ApplicationUser
+                    {
+                        FirstName = Input.FirstName,
+                        LastName = Input.LastName,
+                        Email = Input.Email,
+                        PhoneNumber = Input.PhoneNumber,
+                        Bio = Input.Bio,
+                        Address = new AddressEntity
+                        {
+                            AddressLine_1 = Input.Address.AddressLine_1,
+                            AddressLine_2 = Input.Address.AddressLine_2,
+                            PostalCode = Input.Address.PostalCode,
+                            City = Input.Address.City
+                        }
+                    };
+
+                await UserManager.UpdateAsync(updatedUser);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private sealed class InputModel
+    {
+        public InputModel()
+        {
+            Address = new AddressEntity();
+        }
+        [Required]
+        public string FirstName { get; set; } = null!;
+
+        [Required]
+        public string LastName { get; set; } = null!;
+
+        [Required]
+        [EmailAddress]
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "The Email field is not a valid e-mail address.")]
+        public string Email { get; set; } = "";
+
+        [DataType(DataType.PhoneNumber)]
+        public string PhoneNumber { get; set; } = "";
+
+        public string Bio { get; set; } = "";
+
+        public AddressEntity Address { get; set; }
+
+
+
+    }
+}

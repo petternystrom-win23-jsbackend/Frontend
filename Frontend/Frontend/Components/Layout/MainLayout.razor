@@ -1,0 +1,45 @@
+﻿@using Frontend.Services
+@inherits LayoutComponentBase
+@inject UserService UserService
+<CascadingValue Value="AppUser">
+<body>
+    <div class="wrapper">
+        <Header/>
+        <main>
+            @Body
+        </main>
+        <Footer />
+    </div>
+</body>
+</CascadingValue>
+
+@code {
+    [CascadingParameter]
+    public ApplicationUser AppUser { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUserDataAsync();
+    }
+    public async Task LoadUserDataAsync()
+    {
+        try
+        {
+            var userId = UserManager.GetUserId(HttpContextAccessor.HttpContext.User);
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var user = await UserManager.Users
+                    .Include(x => x.Address)
+                    .FirstOrDefaultAsync(x => x.Id == userId);
+
+                if (user != null)
+                {
+                    AppUser = user;
+                }
+            }
+        }
+        catch (Exception ex)
+        {            
+        }
+    }
+}

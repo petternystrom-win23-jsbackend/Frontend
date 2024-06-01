@@ -1,0 +1,117 @@
+﻿@using Newtonsoft.Json
+@inject UserManager<ApplicationUser> UserManager
+@attribute [StreamRendering]
+
+@if (CurrentUser == null)
+{
+    <p>Loading...</p>
+}
+else
+{    
+    <section class="account-profile">
+        <div class="profile">
+            <div class="profile-image-container">
+                @ErrorMessage
+                <img class="profile-image" src="@CurrentUser.ProfilePicture" alt="@CurrentUser.FirstName @CurrentUser.LastName" />
+                <EditForm Model="FileInput" enctype="multipart/form-data" FormName="UploadFileEditForm" OnSubmit="HandleUpload">
+                    <InputFile name="FileInput.File" accept="image/*" id="fileUploader"  hidden />
+                    <label for="fileUploader" class="btn-refresh">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                    </label>
+                    <button class="btn-theme upload-button" type="submit">Upload</button>
+                </EditForm>
+
+            </div>
+            <div class="profile-info">
+                <h5>@CurrentUser.FirstName @CurrentUser.LastName</h5>
+                <p>@CurrentUser.Email</p>
+            </div>
+        </div>
+    </section>
+}
+
+'
+@code {
+    [CascadingParameter]
+    public ApplicationUser CurrentUser { get; set; }
+
+
+    [SupplyParameterFromForm(FormName = "UploadFileEditForm")]
+    public FileModel FileInput { get; set; } = new ();
+
+    private IBrowserFile? selectedFile;
+
+    private string ErrorMessage = string.Empty;
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+
+    private async Task LoadUsersDataAsync()
+    {
+        try
+        {
+            CurrentUser = await UserManager.GetUserAsync(HttpContext.User) ?? null!;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+    }
+
+    public async Task HandleUpload()
+    {
+        if (FileInput.File != null)
+        {
+            if (FileInput.File.Length > 1024 * 1024 * 10)
+            {
+                ErrorMessage = "File is too large";
+                return;
+            }
+
+            var formData = new MultipartFormDataContent();
+            var fileContent = new StreamContent(FileInput.File.OpenReadStream());
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(FileInput.File.ContentType);
+            formData.Add(fileContent, "file", FileInput.File.FileName);
+            try
+            {
+                var response = await Http.PostAsync("https://fileprovider-pn.azurewebsites.net/api/Upload?code=6wIQHEjVy0IHzmHNWaQ94SED90HcFdFjrzSuGBc5vRP4AzFudQbN8g%3D%3D&container=profilepictures", formData);
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseBody = await response.Content.ReadAsStringAsync();
+                    var responseObject = JsonConvert.DeserializeObject<UploadResponse>(responseBody);
+
+                    CurrentUser.ProfilePicture = responseObject.FilePath;
+                    await UserManager.UpdateAsync(CurrentUser);
+                    StateHasChanged();
+                }
+                else
+                {
+                    ErrorMessage = "Failed to upload file";
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+            }
+        }
+        else
+        {
+            ErrorMessage = "No file selected";
+        }
+    }
+    public class FileModel
+    {
+        public IFormFile File { get; set; }
+    }
+    public class UploadResponse
+    {
+        public string FileName { get; set; }
+        public string ContentType { get; set; }
+        public string UploaderName { get; set; }
+        public DateTime UploadDate { get; set; }
+        public string FilePath { get; set; }
+        public string ContainerName { get; set; }
+    }
+}

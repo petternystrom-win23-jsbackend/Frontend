@@ -1,0 +1,23 @@
+﻿@page "/account/details"
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+@using Frontend.Data
+
+
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+
+
+<PageTitle>Profile</PageTitle>
+
+    <div class="content">
+        <div class="title">
+            <h2>Account Details</h2>
+        </div>
+        <AccountForms/>
+    </div>
+
+@code {
+
+}

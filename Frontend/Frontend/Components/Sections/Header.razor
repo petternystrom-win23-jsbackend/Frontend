@@ -1,0 +1,61 @@
+﻿<header>
+    <div class="container">
+        <a href="/" class="logo">
+            <img src="images/silicon-logo-light.svg" alt="Silicon Logo" />
+        </a>
+        <div class="menu">
+            <nav>
+                <NavLink href="/" class="menu-link" Match="NavLinkMatch.All">Overview</NavLink>
+
+                <AuthorizeView>
+                    <Authorized>
+                        <NavLink href="/courses" class="menu-link">Courses</NavLink>
+                    </Authorized>
+                    <NotAuthorized>
+                        <NavLink href="/#features" class="menu-link">Features</NavLink>
+                    </NotAuthorized>
+                </AuthorizeView>
+
+                <NavLink class="menu-link" href="/contact">Contact</NavLink>
+            </nav>
+        </div>
+        <div class="btn-switch">
+            <label>Light</label>
+            <label class="switch" for="switch-mode">
+                <input type="checkbox" id="switch-mode" />
+                <span class="slider round"></span>
+            </label>
+            <label>Dark</label>
+        </div>
+        <AuthorizeView>
+            <Authorized>
+
+                <a href="/account/details">
+                    <div class="account-buttons">
+                        @if (User != null)
+                        {
+                            <img src="@User.ProfilePicture" alt="Profile Picture" class="profile-picture" />
+                        }
+                    </div>
+                </a>
+                
+            </Authorized>
+            <NotAuthorized>
+                <div class="account-buttons">
+                    <a class="btn-gray" href="/signin">
+                        <i class="fa-solid fa-right-to-bracket"></i><span>Sign In</span>
+                    </a>
+                    <a class="btn-theme" href="/signup">
+                        <i class="fa-regular fa-user"></i>Sign Up
+                    </a>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+</header>
+
+@code {
+    [CascadingParameter]
+    public ApplicationUser User { get; set; }
+
+}

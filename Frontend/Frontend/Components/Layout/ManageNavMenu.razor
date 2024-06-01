@@ -1,0 +1,15 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Frontend.Data
+
+@inject SignInManager<ApplicationUser> SignInManager
+
+<div class="buttons-container">
+    <NavLink class="account-details-button btn-theme" href="/account/Details"><i class="fa-solid fa-gear"></i> Account Details</NavLink>
+    <NavLink class="signout-button btn-theme" href="account/signout"><i class="fa-solid fa-sign-out"></i> Sign Out</NavLink> @*leads to /Account/signout which signs out the user instead of just signing out on the page, /Account/signout can be used*@
+</div>
+
+
+
+@code {
+
+}

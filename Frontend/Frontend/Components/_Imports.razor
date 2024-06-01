@@ -1,0 +1,32 @@
+﻿@using System.Net.Http
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.JSInterop
+@using Frontend
+@using Frontend.Client
+@using Frontend.Components
+@using Frontend.Components.Sections
+@using Frontend.Components.Sections.Components
+@using Frontend.Components.Sections.HomeSections
+@using Microsoft.AspNetCore.Authorization
+@using Frontend.Data
+@using Microsoft.AspNetCore.Identity
+@using Frontend.Components.Pages.Accounts
+@using Frontend.Models
+@using Microsoft.EntityFrameworkCore
+@using System.ComponentModel.DataAnnotations
+
+@inject IConfiguration Configuration
+@inject IHttpContextAccessor HttpContextAccessor
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext DbContext
+
+
+@inject SignInManager<ApplicationUser> SignInManager
