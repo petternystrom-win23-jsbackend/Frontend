@@ -3,15 +3,42 @@
 
     <section class="account-details">
         <div class="container">
-            <aside>
-                <AccountProfileAvatar />
-                <ManageNavMenu />
-            </aside>
-            <AccountDetails/>
+            <CascadingValue Value="user">
+                <aside>
+                    <AccountProfileAvatar />
+                    <ManageNavMenu />
+                </aside>
+                <AccountDetails />
+            </CascadingValue>
 
         </div>
     </section>
 
 
 @code {
+    [CascadingParameter]
+    public ApplicationUser user { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if(user == null){
+            await LoadUserDataAsync();
+        }        
+    }
+    public async Task LoadUserDataAsync()
+    {
+        try
+        {
+            var userId = UserManager.GetUserId(HttpContextAccessor.HttpContext.User);
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var user = await UserManager.Users
+                    .Include(x => x.Address)
+                    .FirstOrDefaultAsync(x => x.Id == userId);
+            }
+        }
+        catch (Exception ex)
+        {            
+        }
+    }
 }

@@ -81,8 +81,17 @@ else
 
                 </div>
                 <div class="price">
-                    <h3>@course.DiscountPrice</h3>
-                    <h6>@course.Price</h6>
+                        @if (!string.IsNullOrEmpty(course.DiscountPrice) && course.DiscountPrice != "0")
+                        {
+                            var discountPercentage = decimal.Parse(course.DiscountPrice);
+                            var originalPrice = decimal.Parse(course.Price);
+                            var discountedPrice = (originalPrice * (1 - (discountPercentage / 100)));
+                            <h3 class="price-font sale-font">@GetFormattedPrice(discountedPrice, course.Currency) <span class="sale-span">@GetFormattedPrice(originalPrice, course.Currency)</span></h3>
+                        }
+                        else
+                        {
+                            <h3 class="price-font">@GetFormattedPrice(decimal.Parse(course.Price), course.Currency)</h3>
+                        }
                 </div>
                 <div class="button-flex">
                     <a href="#" class="btn-theme-s">
@@ -235,6 +244,17 @@ else
             {
                 var ErrorMessage = ex.Message;
             }
+        }
+    }
+    private string GetFormattedPrice(decimal price, string currency)
+    {
+        if (currency == "USD")
+        {
+            return $"${price.ToString("F2", CultureInfo.InvariantCulture)}";
+        }
+        else
+        {
+            return $"{price.ToString("F2", CultureInfo.InvariantCulture)} {currency}";
         }
     }
 

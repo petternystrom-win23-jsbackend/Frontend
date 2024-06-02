@@ -12,7 +12,14 @@ else
         <div class="profile">
             <div class="profile-image-container">
                 @ErrorMessage
-                <img class="profile-image" src="@CurrentUser.ProfilePicture" alt="@CurrentUser.FirstName @CurrentUser.LastName" />
+                @if(CurrentUser.ProfilePicture == null || CurrentUser.ProfilePicture == "avatar.svg")
+                {
+                    <img class="profile-image" src="/images/uploads/profiles/avatar.svg" alt="@CurrentUser.FirstName @CurrentUser.LastName" />
+                }
+                else
+                {
+                    <img class="profile-image" src="@CurrentUser.ProfilePicture" alt="@CurrentUser.FirstName @CurrentUser.LastName" />
+                }
                 <EditForm Model="FileInput" enctype="multipart/form-data" FormName="UploadFileEditForm" OnSubmit="HandleUpload">
                     <InputFile name="FileInput.File" accept="image/*" id="fileUploader"  hidden />
                     <label for="fileUploader" class="btn-refresh">

@@ -19,22 +19,24 @@
                 <NavLink class="menu-link" href="/contact">Contact</NavLink>
             </nav>
         </div>
-        <div class="btn-switch">
-            <label>Light</label>
-            <label class="switch" for="switch-mode">
-                <input type="checkbox" id="switch-mode" />
-                <span class="slider round"></span>
-            </label>
-            <label>Dark</label>
-        </div>
         <AuthorizeView>
             <Authorized>
-
                 <a href="/account/details">
                     <div class="account-buttons">
-                        @if (User != null)
+                        @if (User != null )
                         {
-                            <img src="@User.ProfilePicture" alt="Profile Picture" class="profile-picture" />
+                            @if(User.ProfilePicture == null || User.ProfilePicture == "avatar.svg")
+                            {
+                                <img src="/images/uploads/profiles/avatar.svg" alt="Profile Picture" class="profile-picture" />
+                            }
+                            else
+                            {
+                                <img src="@User.ProfilePicture" alt="Profile Picture" class="profile-picture" />
+                            }
+                        }
+                        else
+                        {
+                            <img src="/images/uploads/profiles/avatar.svg" alt="Profile Picture" class="profile-picture" />
                         }
                     </div>
                 </a>

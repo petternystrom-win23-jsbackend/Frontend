@@ -1,9 +1,6 @@
-﻿@using Frontend.Data
+﻿@* @using Frontend.Data
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
-@inject UserManager<ApplicationUser> UserManager
-@inject NavigationManager Navigation
-@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @if (user == null)
 {
@@ -89,10 +86,13 @@ else
     private HttpContext HttpContext { get; set; } = default!;
 
 
-    private bool isUserDataLoaded = false;
-
     protected override async Task OnInitializedAsync()
     {
+        if (user == null)
+        {
+            await LoadUserDataAsync();
+        }
+
         if (user != null)
         {
             Input.FirstName = user.FirstName;
@@ -100,13 +100,40 @@ else
             Input.Email = user.Email;
             Input.PhoneNumber = user.PhoneNumber;
             Input.Bio = user.Bio;
-            Input.Address.AddressLine_1 = user.Address.AddressLine_1;
-            Input.Address.AddressLine_2 = user.Address.AddressLine_2;
-            Input.Address.PostalCode = user.Address.PostalCode;
-            Input.Address.City = user.Address.City;
+
+            if (user.Address != null)
+            {
+                if (Input.Address == null)
+                {
+                    Input.Address = new AddressEntity();
+                }
+
+                        Input.Address.AddressLine_1 = user.Address.AddressLine_1;
+                        Input.Address.AddressLine_2 = user.Address.AddressLine_2;
+                        Input.Address.PostalCode = user.Address.PostalCode;
+                        Input.Address.City = user.Address.City;
+            }
+        }
+
+    }
+    public async Task LoadUserDataAsync()
+    {
+        try
+        {
+            var userId = UserManager.GetUserId(HttpContextAccessor.HttpContext.User);
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var user = await UserManager.Users
+                    .Include(x => x.Address)
+                    .FirstOrDefaultAsync(x => x.Id == userId);
+
+                
+            }
+        }
+        catch (Exception ex)
+        {
         }
     }
-   
     private async Task UpdateUser()
     {
         var userToUpdate = await UserManager.FindByIdAsync(UserManager.GetUserId(HttpContext.User));
@@ -167,3 +194,4 @@ else
 
     }
 }
+ *@

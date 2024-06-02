@@ -185,11 +185,9 @@
                                 @include lg {
                                     color: $gray-400;
                                 }
-
                             }
                         }
                     }
-
                 }
             }
 
@@ -234,34 +232,34 @@
                     }
                 }
             }
-
         }
-
     }
 
     .container {
         margin-top: 30px;
-        @include lg{
+
+        @include lg {
             margin-top: 95px;
         }
 
 
         .course-description {
-            h1{
+            h1 {
                 text-align: center;
                 @include h2;
             }
-            i{
+
+            i {
                 margin-right: 7px;
             }
 
             display: flex;
             flex-direction: column;
-            @include md{
+
+            @include md {
                 display: grid;
                 grid-template-columns: 5fr 2fr;
-                grid-template-areas:"desc join"
-                                    "learn learn";
+                grid-template-areas: "desc join" "learn learn";
             }
 
             .description-learn {
@@ -271,48 +269,58 @@
                 padding: 10px 10px;
                 display: flex;
                 flex-direction: column;
-                @include md{
+
+                @include md {
                     border: none;
                     box-shadow: none;
                     margin-right: 25px;
                 }
-                @include lg{
-                    h1{
-                    text-align: left;
+
+                @include lg {
+                    h1 {
+                        text-align: left;
                     }
                 }
+
                 .description-text {
                     grid-area: desc;
                     display: flex;
                     flex-direction: column;
                     text-align: center;
                     border-bottom: 1px solid $gray-300;
-                    @include md{
+
+                    @include md {
                         border: none;
                         box-shadow: none;
                         text-align: left;
                     }
                 }
-                .learn-text{
+
+                .learn-text {
                     padding-top: 10px;
-                    h3{
+
+                    h3 {
                         text-align: center;
                     }
-                    @include md{
+
+                    @include md {
                         grid-area: learn;
                         margin-right: 40px;
                     }
-                    @include lg{
-                        h3{
+
+                    @include lg {
+                        h3 {
                             text-align: left;
                         }
-                        p{
+
+                        p {
                             margin-left: 0;
                         }
                     }
                 }
             }
-            .join-course{
+
+            .join-course {
                 display: flex;
                 flex-direction: column;
                 @include shadow-m;
@@ -320,114 +328,131 @@
                 border-radius: 6px;
                 padding: 40px;
                 margin-top: 20px;
-                @include md{
+
+                @include md {
                     grid-area: join;
                     justify-content: space-around;
                     padding: 20px;
                 }
-                @include lg{
+
+                @include lg {
                     padding: 20px 40px;
                 }
-                .paras{
-                    p{
+
+                .paras {
+                    p {
                         margin-bottom: 5px;
                     }
                 }
-                .price{
-                    display:flex;
+
+                .price {
+                    display: flex;
                     align-items: center;
                     gap: 10px;
-                    h6{
+
+                    .sale-span {
                         color: $gray-600;
                         text-decoration: line-through;
+                        font-size: 16px;
+                        font-weight: 400;
                     }
                 }
-                .btn-theme-s{
+
+                .btn-theme-s {
                     @include text-m;
                     color: white;
                     font-weight: 600;
-                    @include md{
+
+                    @include md {
                         width: 200px;
                     }
                 }
             }
         }
-        .program-details{
+
+        .program-details {
             margin-top: 50px;
-            h1{
+
+            h1 {
                 text-align: center;
                 margin-bottom: 40px;
-                @include lg{
+
+                @include lg {
                     text-align: left;
                 }
             }
+
             .details-list {
                 padding: 0;
-
                 list-style: none;
 
                 .detail-item {
-                  display: flex;
-                  align-items: flex-start;
-                  margin-bottom: 50px;
-
-                  .detail-number {
-                    min-width: 80px;
-                    height: 80px;
-                    border-radius: 50%;
-                    background-color: white;
-                    border: 12px solid $gray-100;
-                    color: $gray-900;
                     display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    margin-right: 10px;
-                    font-weight: bold;
-                    font-size: 20px;
-                  }
+                    align-items: flex-start;
+                    margin-bottom: 50px;
 
+                    .detail-number {
+                        min-width: 80px;
+                        height: 80px;
+                        border-radius: 50%;
+                        background-color: white;
+                        border: 12px solid $gray-100;
+                        color: $gray-900;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        margin-right: 10px;
+                        font-weight: bold;
+                        font-size: 20px;
+                    }
                 }
-              }
-
+            }
         }
-        .author-showcase{
+
+        .author-showcase {
             background-color: $gray-900;
             background-image: url('/images/pattern.svg');
             border-radius: 10px;
-            display:flex;
+            display: flex;
             flex-direction: column;
-            @include lg{
+
+            @include lg {
                 border-radius: 0;
                 flex-direction: row;
                 margin-bottom: 50px;
             }
 
-            .author-image{
+            .author-image {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                img{
+
+                img {
                     border-radius: 10px;
                     max-width: 80%;
                     margin: 30px 0 10px 0;
-                    @include lg{
+
+                    @include lg {
                         margin: 0;
                         max-width: 100%;
                         height: 568px;
                         border-radius: 0;
                     }
                 }
-
             }
-            .author-info{
+
+            .author-info {
                 display: flex;
                 margin: 20px;
-                @include lg{
+
+                @include lg {
                     margin: 0;
                 }
-                .texts{
+
+                .texts {
                     text-align: center;
-                    @include lg{
+
+                    @include lg {
                         margin-left: 120px;
                         margin-top: 100px;
                         max-width: 526px;
@@ -436,20 +461,22 @@
                         text-align: left;
                     }
 
-                    h1{
+                    h1 {
                         color: white;
                     }
-                    h6{
+
+                    h6 {
                         @include text-xl;
                         opacity: 0.5;
                         color: white;
                     }
-                    p{
+
+                    p {
                         color: white;
                         opacity: 0.7;
                     }
 
-                    .sub-follow{
+                    .sub-follow {
                         display: flex;
                         flex-direction: column;
                         text-align: center;
@@ -457,39 +484,40 @@
                         justify-content: center;
                         gap: 15px;
                         margin-bottom: 30px;
-                        @include md{
+
+                        @include md {
                             flex-direction: row;
                         }
-                        @include lg{
+
+                        @include lg {
                             justify-content: left;
                             margin-top: 40px;
                             margin-bottom: 0;
                             gap: 24px;
                         }
 
-                        p{
+                        p {
                             margin: 0;
                         }
-                        i{
+
+                        i {
                             margin-left: 5px;
                         }
-                        .sub{
+
+                        .sub {
                             display: flex;
                             align-items: center;
                             justify-content: center;
-
-
                             height: 44px;
                             width: 180px;
                             background-color: $danger;
                             border-radius: 10px;
-
                         }
-                        .follow{
+
+                        .follow {
                             display: flex;
                             align-items: center;
                             justify-content: center;
-
                             height: 44px;
                             width: 180px;
                             background-color: $info;
@@ -497,8 +525,6 @@
                         }
                     }
                 }
-
-
             }
         }
     }
